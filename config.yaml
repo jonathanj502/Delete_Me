@@ -1,0 +1,17 @@
+search_queries:
+  - "subject:verify your email"
+  - "subject:confirm your email"
+  - "subject:welcome to"
+  - "subject:your account"
+  - "subject:reset your password"
+  - "subject:account created"
+  - "subject:email confirmation"
+  - "unsubscribe"
+  - "subject:activate your account"
+  - "subject:complete your registration"
+
+# Total unique messages fetched across all queries. null = unlimited.
+max_results: 5000
+
+# Set to true to also write output/accounts.db (SQLite).
+output_sqlite: false
