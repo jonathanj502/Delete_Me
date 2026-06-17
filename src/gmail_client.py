@@ -15,9 +15,10 @@ def fetch_messages(
     service,
     queries: list[str],
     max_results: int | None,
+    after_date: str | None = None,
 ) -> list[dict]:
     """Return raw API message objects (metadata headers only) for all matching queries."""
-    message_ids = _collect_ids(service, queries, max_results)
+    message_ids = _collect_ids(service, queries, max_results, after_date)
     return _fetch_headers(service, list(message_ids))
 
 
@@ -25,11 +26,14 @@ def _collect_ids(
     service,
     queries: list[str],
     max_results: int | None,
+    after_date: str | None = None,
 ) -> set[str]:
     ids: set[str] = set()
     cap_hit = False
 
     for query in queries:
+        if after_date:
+            query = f"{query} after:{after_date}"
         if cap_hit:
             break
         page_token = None
