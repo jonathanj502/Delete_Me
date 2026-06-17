@@ -72,7 +72,7 @@ def main() -> None:
     creds = auth.get_credentials()
     service = gmail_client.build_service(creds)
 
-    print(f"Fetching messages ({len(queries)} queries, max_results={max_results or 'unlimited'})...")
+    print(f"Fetching messages ({len(queries)} queries, max_results={max_results if max_results is not None else 'unlimited'})...")
     raw_messages = gmail_client.fetch_messages(service, queries, max_results, after_date=after_date)
     print(f"  {len(raw_messages)} messages fetched")
 
@@ -95,7 +95,7 @@ def main() -> None:
         output.write_sqlite(final_rows)
         print(f"SQLite written: {output.DB_PATH}")
 
-    state.save_state(state.mark_complete({}))
+    state.save_state(state.mark_complete(in_progress))
     print("Scan complete.")
 
 
