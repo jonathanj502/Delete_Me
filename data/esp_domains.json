@@ -1,0 +1,9 @@
+{
+  "sendgrid.net":    {"type": "esp", "resolve_from": ["reply-to", "display-name"]},
+  "amazonses.com":   {"type": "esp", "resolve_from": ["reply-to", "display-name"]},
+  "list-manage.com": {"type": "esp", "resolve_from": ["display-name"]},
+  "mailchimp.com":   {"type": "esp", "resolve_from": ["display-name"]},
+  "klaviyo.com":     {"type": "esp", "resolve_from": ["reply-to", "display-name"]},
+  "exacttarget.com": {"type": "esp", "resolve_from": ["reply-to"]},
+  "postmarkapp.com": {"type": "esp", "resolve_from": ["reply-to", "display-name"]}
+}
