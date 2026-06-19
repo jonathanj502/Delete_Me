@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gmail Account Scanner — entry point."""
+"""Delete Me — entry point."""
 
 import argparse
 import sys

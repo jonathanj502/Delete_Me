@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-## Project: Account Aggregator
+## Project: Delete Me
 
 Local Python tool that aggregates all online accounts tied to a user's email address, so they can review and manually delete the ones they no longer want. Infers accounts from Gmail signup/welcome/verification emails and outputs a CSV the user annotates with keep/delete decisions. Users supply their own Google Cloud OAuth credentials and run everything on their own machine. See PLAN.md for full architecture and implementation chunks.
 

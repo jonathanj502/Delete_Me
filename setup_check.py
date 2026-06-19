@@ -94,7 +94,7 @@ def run_checks() -> bool:
 
 
 def main() -> None:
-    print("Gmail Account Scanner — pre-flight check\n")
+    print("Delete Me — pre-flight check\n")
     ok = run_checks()
     print()
     if ok:

@@ -1,4 +1,4 @@
-# Account Aggregator
+# Delete Me
 
 Scans your Gmail inbox to find every online account tied to your email, then outputs a spreadsheet for you to review. Runs entirely on your machine — no data leaves your computer.
 
@@ -12,7 +12,7 @@ Scans your Gmail inbox to find every online account tied to your email, then out
 
 ```bash
 git clone <repo-url>
-cd account-aggregator
+cd delete-me
 pip install -r requirements.txt
 ```
 
