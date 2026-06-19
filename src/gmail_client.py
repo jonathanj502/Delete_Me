@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
 
-_BATCH_SIZE = 100  # max items per Gmail API batch request
+_BATCH_SIZE = 25  # concurrent requests per batch; >50 triggers "too many concurrent requests"
 
 
 def build_service(creds: Credentials):
@@ -73,21 +73,34 @@ def _collect_ids(
     return ids
 
 
+_INTER_BATCH_DELAY = 0.5  # seconds between chunks to avoid "too many concurrent requests"
+
+
 def _fetch_headers(service, message_ids: list[str]) -> list[dict]:
     """Batch-fetch metadata headers for each message ID."""
     results: list[dict] = []
-
     for i in range(0, len(message_ids), _BATCH_SIZE):
-        chunk_ids = message_ids[i : i + _BATCH_SIZE]
-        chunk_results: list[dict] = []
-        chunk_errors: list[Exception] = []
+        if i > 0:
+            time.sleep(_INTER_BATCH_DELAY)
+        results.extend(_fetch_chunk(service, message_ids[i : i + _BATCH_SIZE]))
+    return results
+
+
+def _fetch_chunk(service, chunk_ids: list[str], max_retries: int = 5) -> list[dict]:
+    """Fetch one batch of message headers, retrying the whole chunk on 429/5xx."""
+    _RETRYABLE = (429, 500, 502, 503, 504)
+    delay = 1.0
+
+    for attempt in range(max_retries):
+        results: list[dict] = []
+        errors: list[Exception] = []
 
         def _callback(
             request_id: str,
             response: dict | None,
             exception: Exception | None,
-            _r: list = chunk_results,
-            _e: list = chunk_errors,
+            _r: list = results,
+            _e: list = errors,
         ) -> None:
             if exception is not None:
                 _e.append(exception)
@@ -104,13 +117,22 @@ def _fetch_headers(service, message_ids: list[str]) -> list[dict]:
                     metadataHeaders=["From", "Reply-To", "Subject", "Date"],
                 )
             )
-        _with_backoff(batch.execute)
+        batch.execute()
 
-        if chunk_errors:
-            raise chunk_errors[0]
-        results.extend(chunk_results)
+        retryable = [e for e in errors if isinstance(e, HttpError) and e.resp.status in _RETRYABLE]
+        fatal = [e for e in errors if e not in retryable]
 
-    return results
+        if fatal:
+            raise fatal[0]
+        if not retryable:
+            return results
+        if attempt < max_retries - 1:
+            time.sleep(delay)
+            delay *= 2
+        else:
+            raise retryable[0]
+
+    return []  # unreachable
 
 
 def _with_backoff(fn, max_retries: int = 5):
