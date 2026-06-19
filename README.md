@@ -50,10 +50,9 @@ This is a one-time setup. You are creating a private OAuth app inside your own G
 4. Click **Save and Continue**
 5. On the Scopes screen → **Add or Remove Scopes** → search for and add:
    `https://www.googleapis.com/auth/gmail.readonly`
-6. Click **Save and Continue**
-7. On the Test Users screen → **Add Users** → add your Gmail address
-   > This step is required. Without it, the OAuth flow will fail.
-8. Click **Save and Continue** through to the end
+6. Click **Save and Continue** through to the end
+7. Back on the OAuth consent screen, click the **Audience** tab → **Add Users** → add your Gmail address
+   > This step is required. Without it, the OAuth flow will fail with "Access blocked".
 
 ### 4. Create OAuth credentials
 
@@ -69,7 +68,7 @@ This is a one-time setup. You are creating a private OAuth app inside your own G
 python setup_check.py
 ```
 
-This checks that `credentials.json` exists, is not accidentally tracked by git, and that the output directory is writable. Fix any reported issues before running the scanner.
+This checks that `credentials.json` exists, is the correct type (Desktop OAuth client), is not accidentally tracked by git, and that the output directory is writable. Fix any reported issues before running the scanner.
 
 #### The "unverified app" warning
 
@@ -142,8 +141,11 @@ Open `accounts.csv` in any spreadsheet app, review the list, and fill in the `de
 **`credentials.json` not found**
 Make sure you downloaded the OAuth credentials JSON and saved it as `credentials.json` in the project root (not a subfolder). Run `python setup_check.py` to confirm.
 
-**"Access blocked" or OAuth flow fails**
-You may have skipped adding yourself as a Test User in step 3 of the setup. Go back to the OAuth consent screen → Test Users → add your Gmail address.
+**"Access blocked" or `Error 403: access_denied`**
+You need to add yourself as a test user. Go to **APIs & Services → OAuth consent screen → Audience tab → Test users → Add Users** and add your Gmail address. Then re-run the scanner.
+
+**`credentials.json` is for a Web app or is a Service Account key**
+The OAuth credential must be a **Desktop app** type. Go to **APIs & Services → Credentials → Create Credentials → OAuth client ID → Desktop app**, download the new JSON, and replace `credentials.json`. Run `python setup_check.py` to confirm the format is correct.
 
 **Token expired or revoked**
 Delete `output/token.json` and re-run. The OAuth flow will prompt you to sign in again.
