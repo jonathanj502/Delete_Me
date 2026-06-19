@@ -19,8 +19,8 @@ def _handle_oauth_error(exc: Exception) -> None:
             "OAuth authorization was denied (Error 403: access_denied).\n\n"
             "You need to add your Google account as a test user:\n"
             "  1. Go to https://console.cloud.google.com and select your project\n"
-            "  2. APIs & Services → OAuth consent screen\n"
-            "  3. Scroll to 'Test users' → click 'Add Users'\n"
+            "  2. APIs & Services → OAuth consent screen → Audience tab\n"
+            "  3. Under 'Test users' → click 'Add Users'\n"
             "  4. Enter your Gmail address and click Save\n"
             "  5. Re-run the scanner\n"
         ) from exc

@@ -102,7 +102,7 @@ def main() -> None:
         print()
         print("Reminder: before running the scanner for the first time, make sure")
         print("your Gmail address is added as a Test User in the OAuth consent screen:")
-        print("  console.cloud.google.com → APIs & Services → OAuth consent screen → Test users")
+        print("  console.cloud.google.com → APIs & Services → OAuth consent screen → Audience tab → Test users")
     else:
         print("Fix the issues above before running the scanner.")
         sys.exit(1)
