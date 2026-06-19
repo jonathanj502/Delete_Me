@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Pre-flight validator — run before first scan to catch common setup mistakes."""
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -20,6 +21,30 @@ def _check_credentials_exist() -> bool:
         return True
     print(f"{_FAIL} credentials.json not found")
     print("      See README.md → 'Google Cloud OAuth Setup' for instructions.")
+    return False
+
+
+def _check_credentials_format() -> bool:
+    if not CREDENTIALS_PATH.exists():
+        return True  # already reported by _check_credentials_exist
+    try:
+        data = json.loads(CREDENTIALS_PATH.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        print(f"{_FAIL} credentials.json is not valid JSON: {exc}")
+        return False
+    if "installed" in data:
+        print(f"{_PASS} credentials.json is a Desktop OAuth client")
+        return True
+    if "web" in data:
+        print(f"{_FAIL} credentials.json is for a Web app, not a Desktop app")
+        print("      Re-create the credential: Credentials → Create OAuth client ID → Desktop app")
+        return False
+    if data.get("type") == "service_account":
+        print(f"{_FAIL} credentials.json is a Service Account key — this tool needs a Desktop OAuth client")
+        print("      Create an OAuth client ID instead: Credentials → Create OAuth client ID → Desktop app")
+        return False
+    print(f"{_FAIL} credentials.json format not recognised")
+    print("      Expected a Desktop OAuth client secret — see README.md → 'Google Cloud OAuth Setup'")
     return False
 
 
@@ -61,6 +86,7 @@ def run_checks() -> bool:
     """Run all pre-flight checks. Returns True if all pass."""
     results = [
         _check_credentials_exist(),
+        _check_credentials_format(),
         _check_credentials_not_tracked(),
         _check_output_writable(),
     ]
@@ -73,6 +99,10 @@ def main() -> None:
     print()
     if ok:
         print("All checks passed. Ready to scan.")
+        print()
+        print("Reminder: before running the scanner for the first time, make sure")
+        print("your Gmail address is added as a Test User in the OAuth consent screen:")
+        print("  console.cloud.google.com → APIs & Services → OAuth consent screen → Test users")
     else:
         print("Fix the issues above before running the scanner.")
         sys.exit(1)
